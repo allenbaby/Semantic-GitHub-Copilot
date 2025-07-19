@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PromptInput } from "@/components/PromptInput";
 import { FileTreeViewer, FileNode } from "@/components/FileTreeViewer";
 import { CodePreview } from "@/components/CodePreview";
+import { ApiKeyDialog } from "@/components/ApiKeyDialog";
 import { generateProjectStructure } from "@/services/projectGenerator";
 import { useToast } from "@/hooks/use-toast";
 
@@ -9,6 +10,8 @@ const Index = () => {
   const [projectStructure, setProjectStructure] = useState<FileNode[]>([]);
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
+  const [tempApiKey, setTempApiKey] = useState<string>("");
   const { toast } = useToast();
 
   const handleGenerate = async (prompt: string) => {
@@ -16,7 +19,7 @@ const Index = () => {
     setSelectedFile(null);
     
     try {
-      const structure = await generateProjectStructure(prompt);
+      const structure = await generateProjectStructure(prompt, tempApiKey);
       setProjectStructure(structure);
       
       toast({
@@ -24,15 +27,45 @@ const Index = () => {
         description: "Your project structure has been created successfully.",
       });
     } catch (error) {
-      toast({
-        title: "Generation failed",
-        description: "There was an error generating your project structure.",
-        variant: "destructive",
-      });
+      if (error instanceof Error && error.message.includes('API key required')) {
+        setShowApiKeyDialog(true);
+        toast({
+          title: "API Key Required",
+          description: "Please provide your Groq API key to generate AI-powered structures.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Generation failed",
+          description: error instanceof Error ? error.message : "There was an error generating your project structure.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }
   };
+
+  const handleApiKeySet = (apiKey: string) => {
+    setTempApiKey(apiKey);
+    setShowApiKeyDialog(false);
+    
+    // Store in localStorage for persistence
+    localStorage.setItem('groq_api_key', apiKey);
+    
+    toast({
+      title: "API Key Set",
+      description: "You can now generate AI-powered project structures!",
+    });
+  };
+
+  // Load API key from localStorage on component mount
+  useEffect(() => {
+    const storedApiKey = localStorage.getItem('groq_api_key');
+    if (storedApiKey) {
+      setTempApiKey(storedApiKey);
+    }
+  }, []);
 
   const handleFileSelect = (file: FileNode) => {
     setSelectedFile(file);
@@ -59,6 +92,12 @@ const Index = () => {
             </div>
           </div>
         )}
+
+        <ApiKeyDialog
+          isOpen={showApiKeyDialog}
+          onApiKeySet={handleApiKeySet}
+          onClose={() => setShowApiKeyDialog(false)}
+        />
       </div>
     </div>
   );
