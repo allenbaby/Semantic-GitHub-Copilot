@@ -61,7 +61,30 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Custom developer theme colors
+				'code-bg': 'hsl(var(--code-bg))',
+				'code-border': 'hsl(var(--code-border))',
+				'file-tree-bg': 'hsl(var(--file-tree-bg))',
+				'syntax-keyword': 'hsl(var(--syntax-keyword))',
+				'syntax-string': 'hsl(var(--syntax-string))',
+				'syntax-comment': 'hsl(var(--syntax-comment))',
+				'syntax-function': 'hsl(var(--syntax-function))'
+			},
+			backgroundImage: {
+				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-bg': 'var(--gradient-bg)',
+				'gradient-card': 'var(--gradient-card)'
+			},
+			boxShadow: {
+				'code': 'var(--shadow-code)',
+				'card-custom': 'var(--shadow-card)'
+			},
+			fontFamily: {
+				mono: ['JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', 'monospace']
+			},
+			transitionTimingFunction: {
+				'smooth': 'var(--transition-smooth)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
