@@ -116,20 +116,34 @@ Visit [http://localhost:5173](http://localhost:5173) in your browser.
 ## 📂 Project Structure
 
 ```
-├── public/                     # Static assets
-├── src/
-│   ├── components/
-│   │   ├── PromptInput.tsx     # Project description input
-│   │   ├── AppPreview.tsx      # Sandpack live preview
-│   │   └── FileTreeViewer.tsx  # File structure display
-│   ├── api.ts                  # Groq API integration
-│   ├── App.tsx                 # Main app component
-│   └── main.tsx                # Entry point
-├── .env                        # Environment variables
-├── package.json                # Project metadata and dependencies
-├── tsconfig.json               # TypeScript configuration
-├── vite.config.ts              # Vite configuration
-└── README.md                   # This file
+## 📂 Project Structure
+
+```
+├── node_modules/           # Node.js dependencies (auto-generated)
+├── public/                 # Static assets
+│   └── index.html          # Main HTML entry point
+├── src/                    # Source code
+│   ├── components/         # Reusable React components
+│   ├── hooks/              # Custom React hooks
+│   ├── lib/                # Utility libraries or shared code
+│   ├── pages/              # Page components (e.g., for routing)
+│   ├── services/           # API or service logic
+│   ├── App.css             # Global styles for App component
+│   ├── App.tsx             # Main App component
+│   ├── index.css           # Global CSS styles
+│   ├── main.tsx            # Application entry point
+│   └── Preview.css         # Custom styles for Sandpack preview
+├── TS_vite-env.d.ts        # TypeScript declaration for Vite environment
+├── env                     # Environment variable configuration (e.g., .env file)
+├── .gitignore              # Git ignore file
+├── bun.lockb               # Bun package lock file
+├── components.json         # Shadcn UI components configuration
+├── eslint.config.js        # ESLint configuration
+├── package-lock.json       # npm package lock file
+├── package.json            # Project dependencies and scripts
+├── postcss.config.js       # PostCSS configuration
+├── tsconfig.json           # TypeScript configuration
+├── README.md               # Readme
 ```
 
 ---
@@ -160,38 +174,7 @@ Visit [http://localhost:5173](http://localhost:5173) in your browser.
   - `.env`: `VITE_GROQ_API_KEY=...`
   - `localStorage.setItem("groq_api_key", "gsk_...")`
 
-### 🖼️ Sandpack Preview Styling
-
-Apply the following CSS in `src/Preview.css`:
-
-```css
-.sp-wrapper,
-.sp-layout,
-.sp-preview-container {
-  height: 100% !important;
-}
 ```
-
-Then import it in `AppPreview.tsx`:
-
-```ts
-import "@/Preview.css";
-```
-
-### ⚡ Vite Configuration
-
-Located in `vite.config.ts`:
-
-```ts
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-
-export default defineConfig({
-  plugins: [react()],
-});
-```
-
----
 
 ## 🧠 Tech Stack
 
