@@ -63,11 +63,68 @@ const AppPreview = ({ projectStructure }: AppPreviewProps) => {
 
   const projectDependencies = getProjectDependencies();
   
-  // Only add fallback if NO App file exists at all
-  if (!sandpackFiles["src/App.tsx"] && !sandpackFiles["src/App.jsx"] && 
-      !sandpackFiles["src/App.js"] && !sandpackFiles["App.tsx"] && 
-      !sandpackFiles["App.jsx"] && !sandpackFiles["App.js"]) {
-    sandpackFiles["src/App.tsx"] = `import React from 'react';
+  // Find the main entry point - check README first, then common patterns
+  const findMainEntryPoint = () => {
+    // Check README for instructions
+    const readmeFile = sandpackFiles["README.md"] || sandpackFiles["readme.md"];
+    if (readmeFile) {
+      // Look for common patterns in README that indicate main file
+      const lowerReadme = readmeFile.toLowerCase();
+      if (lowerReadme.includes('npm start') || lowerReadme.includes('npm run dev')) {
+        // This suggests it's a standard React app
+      }
+    }
+    
+    // Check package.json for main entry or scripts
+    const packageJsonFile = sandpackFiles["package.json"];
+    if (packageJsonFile) {
+      try {
+        const packageJson = JSON.parse(packageJsonFile);
+        if (packageJson.main) {
+          return packageJson.main;
+        }
+      } catch (error) {
+        console.error("Failed to parse package.json:", error);
+      }
+    }
+    
+    // Look for common entry points in order of preference
+    const entryPoints = [
+      "src/index.tsx", "src/index.jsx", "src/index.js",
+      "src/main.tsx", "src/main.jsx", "src/main.js",
+      "index.tsx", "index.jsx", "index.js",
+      "main.tsx", "main.jsx", "main.js"
+    ];
+    
+    for (const entry of entryPoints) {
+      if (sandpackFiles[entry]) {
+        return entry;
+      }
+    }
+    
+    return null;
+  };
+
+  const mainEntry = findMainEntryPoint();
+  
+  // Only add minimal fallbacks if absolutely necessary
+  if (!mainEntry) {
+    // No main entry found, create minimal structure
+    sandpackFiles["src/index.tsx"] = `import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+
+const container = document.getElementById('root');
+const root = createRoot(container!);
+root.render(<App />);`;
+
+    // Only add App if no App file exists anywhere
+    const hasAppFile = Object.keys(sandpackFiles).some(path => 
+      /\/(App|app)\.(tsx|jsx|js)$/.test(path) || /^(App|app)\.(tsx|jsx|js)$/.test(path)
+    );
+    
+    if (!hasAppFile) {
+      sandpackFiles["src/App.tsx"] = `import React from 'react';
 
 export default function App() {
   return (
@@ -77,19 +134,10 @@ export default function App() {
     </div>
   );
 }`;
+    }
   }
 
-  if (!sandpackFiles["src/index.tsx"] && !sandpackFiles["src/index.jsx"]) {
-    sandpackFiles["src/index.tsx"] = `import React from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App';
-
-const container = document.getElementById('root');
-const root = createRoot(container!);
-root.render(<App />);`;
-  }
-
-  if (!sandpackFiles["public/index.html"]) {
+  if (!sandpackFiles["public/index.html"] && !sandpackFiles["index.html"]) {
     sandpackFiles["public/index.html"] = `<!DOCTYPE html>
 <html lang="en">
 <head>
