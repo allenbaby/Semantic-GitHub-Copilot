@@ -37,8 +37,10 @@ const AppPreview = ({ projectStructure }: AppPreviewProps) => {
 
   const sandpackFiles = convertToSandpackFiles(projectStructure);
   
-  // Ensure we have essential files for React
-  if (!sandpackFiles["src/App.tsx"] && !sandpackFiles["src/App.jsx"]) {
+  // Only add fallback if NO App file exists at all
+  if (!sandpackFiles["src/App.tsx"] && !sandpackFiles["src/App.jsx"] && 
+      !sandpackFiles["src/App.js"] && !sandpackFiles["App.tsx"] && 
+      !sandpackFiles["App.jsx"] && !sandpackFiles["App.js"]) {
     sandpackFiles["src/App.tsx"] = `import React from 'react';
 
 export default function App() {
@@ -103,7 +105,12 @@ root.render(<App />);`;
               "react": "^18.3.1",
               "react-dom": "^18.3.1",
               "@types/react": "^18.3.3",
-              "@types/react-dom": "^18.3.0"
+              "@types/react-dom": "^18.3.0",
+              "axios": "^1.6.0",
+              "lodash": "^4.17.21",
+              "moment": "^2.29.4",
+              "uuid": "^9.0.0",
+              "classnames": "^2.3.2"
             }
           }}
         />
