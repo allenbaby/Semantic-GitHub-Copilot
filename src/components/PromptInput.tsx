@@ -20,7 +20,7 @@ export const PromptInput = ({ onGenerate, isLoading }: PromptInputProps) => {
   };
 
   const examplePrompts = [
-    "Build a todo app with React frontend, Node.js backend, and MongoDB",
+    "Build a todo app with Reactjs with ultra modern Ui with colors",
     "Create a user authentication system with JWT and password reset",
     "Full-stack notes app with sharing features and real-time collaboration",
     "E-commerce site with product catalog, cart, and payment integration"
