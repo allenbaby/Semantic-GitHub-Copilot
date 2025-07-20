@@ -1,6 +1,7 @@
 import { Sandpack } from "@codesandbox/sandpack-react";
 import { FileNode } from "@/components/FileTreeViewer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import "@/Preview.css";
 
 interface AppPreviewProps {
   projectStructure: FileNode[];
@@ -67,14 +68,6 @@ const AppPreview = ({ projectStructure }: AppPreviewProps) => {
         console.error("Failed to parse package.json:", error);
       }
     }
-
-    // Default React dependencies if no package.json found
-    return {
-      "react": "^18.3.1",
-      "react-dom": "^18.3.1",
-      "@types/react": "^18.3.3",
-      "@types/react-dom": "^18.3.0"
-    };
   };
 
   const projectDependencies = getProjectDependencies();
@@ -123,50 +116,9 @@ const AppPreview = ({ projectStructure }: AppPreviewProps) => {
   };
 
   const mainEntry = findMainEntryPoint();
-
-  // Only add minimal fallbacks if absolutely necessary
-  if (!mainEntry) {
-    // No main entry found, create minimal structure
-    sandpackFiles["src/index.tsx"] = `import React from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App';
-
-const container = document.getElementById('root');
-const root = createRoot(container!);
-root.render(<App />);`;
-
-    // Only add App if no App file exists anywhere
-    const hasAppFile = Object.keys(sandpackFiles).some(path =>
-      /\/(App|app)\.(tsx|jsx|js|ts)$/.test(path) || /^(App|app)\.(tsx|jsx|js|ts)$/.test(path)
-    );
-
-    if (!hasAppFile) {
-      sandpackFiles["src/App.tsx"] = `import React from 'react';
-
-export default function App() {
-  return (
-    <div style={{ padding: '20px', fontFamily: 'system-ui' }}>
-      <h1>Generated App Preview</h1>
-      <p>This is a preview of your generated project structure.</p>
-    </div>
-  );
-}`;
-    }
-  }
-
-  if (!findFileContentByName(sandpackFiles, "index.html")) {
-    sandpackFiles["public/index.html"] = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generated App</title>
-</head>
-<body>
-    <div id="root"></div>
-</body>
-</html>`;
-  }
+  console.log("Main Entry Point:", mainEntry);
+  console.log("Project Dependencies:", projectDependencies);
+  console.log("Sandpack Files:", sandpackFiles);
 
   return (
     <Card className="h-[600px]">
@@ -177,25 +129,29 @@ export default function App() {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0 h-[calc(100%-4rem)]">
-        <Sandpack
-          template="react-ts"
-          files={sandpackFiles}
-          theme="dark"
-          options={{
-            showNavigator: false,
-            showTabs: true,
-            showLineNumbers: true,
-            showInlineErrors: true,
-            wrapContent: true,
-            editorHeight: "100%",
-            layout: "preview",
-            autorun: true,
-          }}
-          customSetup={{
-            dependencies: projectDependencies,
-            entry: mainEntry
-          }}
-        />
+        <div className="h-full">
+          <div className="w-full h-full border-2">
+            <Sandpack
+              template="react"
+              files={sandpackFiles}
+              theme="dark"
+              options={{
+                showNavigator: false,
+                showTabs: true,
+                showLineNumbers: true,
+                showInlineErrors: true,
+                wrapContent: true,
+                layout: "preview",
+                autorun: true,
+                editorHeight: "100%", // This should work with the parent height
+              }}
+              customSetup={{
+                dependencies: projectDependencies,
+                entry: mainEntry,
+              }}
+            />
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
