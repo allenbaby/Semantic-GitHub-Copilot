@@ -21,25 +21,41 @@ const AppPreview = ({ projectStructure }: AppPreviewProps) => {
   // Convert FileNode structure to Sandpack files format
   const convertToSandpackFiles = (nodes: FileNode[], basePath = ""): Record<string, string> => {
     const files: Record<string, string> = {};
-    
+
     nodes.forEach((node) => {
       const fullPath = basePath ? `${basePath}/${node.name}` : node.name;
-      
+
       if (node.type === "file" && node.content) {
         files[fullPath] = node.content;
       } else if (node.type === "folder" && node.children) {
         Object.assign(files, convertToSandpackFiles(node.children, fullPath));
       }
     });
-    
+
     return files;
   };
 
+  function findFileContentByName(
+    files: Record<string, string>,
+    name: string,
+    rKey: string = "N"
+  ): string | null {
+    for (const key of Object.keys(files)) {
+      if (key.includes(name)) {
+        const res = (rKey === 'Y') ? key : files[key];
+        return res
+      }
+    }
+    return null;
+  }
+
+
+
   const sandpackFiles = convertToSandpackFiles(projectStructure);
-  
+
   // Extract dependencies from package.json if it exists
   const getProjectDependencies = () => {
-    const packageJsonFile = sandpackFiles["package.json"];
+    const packageJsonFile = findFileContentByName(sandpackFiles, "package.json");
     if (packageJsonFile) {
       try {
         const packageJson = JSON.parse(packageJsonFile);
@@ -51,7 +67,7 @@ const AppPreview = ({ projectStructure }: AppPreviewProps) => {
         console.error("Failed to parse package.json:", error);
       }
     }
-    
+
     // Default React dependencies if no package.json found
     return {
       "react": "^18.3.1",
@@ -62,11 +78,11 @@ const AppPreview = ({ projectStructure }: AppPreviewProps) => {
   };
 
   const projectDependencies = getProjectDependencies();
-  
+
   // Find the main entry point - check README first, then common patterns
   const findMainEntryPoint = () => {
     // Check README for instructions
-    const readmeFile = sandpackFiles["README.md"] || sandpackFiles["readme.md"];
+    const readmeFile = findFileContentByName(sandpackFiles, "README.md") || findFileContentByName(sandpackFiles, "readme.md");
     if (readmeFile) {
       // Look for common patterns in README that indicate main file
       const lowerReadme = readmeFile.toLowerCase();
@@ -74,9 +90,9 @@ const AppPreview = ({ projectStructure }: AppPreviewProps) => {
         // This suggests it's a standard React app
       }
     }
-    
+
     // Check package.json for main entry or scripts
-    const packageJsonFile = sandpackFiles["package.json"];
+    const packageJsonFile = findFileContentByName(sandpackFiles, "package.json");
     if (packageJsonFile) {
       try {
         const packageJson = JSON.parse(packageJsonFile);
@@ -87,26 +103,27 @@ const AppPreview = ({ projectStructure }: AppPreviewProps) => {
         console.error("Failed to parse package.json:", error);
       }
     }
-    
+
     // Look for common entry points in order of preference
     const entryPoints = [
-      "src/index.tsx", "src/index.jsx", "src/index.js",
-      "src/main.tsx", "src/main.jsx", "src/main.js",
-      "index.tsx", "index.jsx", "index.js",
-      "main.tsx", "main.jsx", "main.js"
+      "src/index.tsx", "src/index.jsx", "src/index.js", "src/index.ts",
+      "src/main.tsx", "src/main.jsx", "src/main.js", "src/main.ts",
+      "index.tsx", "index.jsx", "index.js", "index.ts",
+      "main.tsx", "main.jsx", "main.js", "main.ts"
     ];
-    
+
     for (const entry of entryPoints) {
-      if (sandpackFiles[entry]) {
-        return entry;
+      const res = (findFileContentByName(sandpackFiles, entry, 'Y'))
+      if (res) {
+        return res;
       }
     }
-    
+
     return null;
   };
 
   const mainEntry = findMainEntryPoint();
-  
+
   // Only add minimal fallbacks if absolutely necessary
   if (!mainEntry) {
     // No main entry found, create minimal structure
@@ -119,10 +136,10 @@ const root = createRoot(container!);
 root.render(<App />);`;
 
     // Only add App if no App file exists anywhere
-    const hasAppFile = Object.keys(sandpackFiles).some(path => 
-      /\/(App|app)\.(tsx|jsx|js)$/.test(path) || /^(App|app)\.(tsx|jsx|js)$/.test(path)
+    const hasAppFile = Object.keys(sandpackFiles).some(path =>
+      /\/(App|app)\.(tsx|jsx|js|ts)$/.test(path) || /^(App|app)\.(tsx|jsx|js|ts)$/.test(path)
     );
-    
+
     if (!hasAppFile) {
       sandpackFiles["src/App.tsx"] = `import React from 'react';
 
@@ -137,7 +154,7 @@ export default function App() {
     }
   }
 
-  if (!sandpackFiles["public/index.html"] && !sandpackFiles["index.html"]) {
+  if (!findFileContentByName(sandpackFiles, "index.html")) {
     sandpackFiles["public/index.html"] = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -166,7 +183,7 @@ export default function App() {
           theme="dark"
           options={{
             showNavigator: false,
-            showTabs: false,
+            showTabs: true,
             showLineNumbers: true,
             showInlineErrors: true,
             wrapContent: true,
@@ -175,7 +192,8 @@ export default function App() {
             autorun: true,
           }}
           customSetup={{
-            dependencies: projectDependencies
+            dependencies: projectDependencies,
+            entry: mainEntry
           }}
         />
       </CardContent>

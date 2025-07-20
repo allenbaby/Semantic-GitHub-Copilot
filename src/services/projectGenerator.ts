@@ -30,13 +30,13 @@ interface FileNode {
 }
 
 Rules:
-1. Generate realistic file content with proper boilerplate code
+1. Generate realistic file content with proper boilerplate code using latest technologies
 2. Include package.json files with correct dependencies
 3. Create proper folder structure
 4. Add README.md with setup instructions
 5. Include configuration files (tsconfig.json, vite.config.ts, etc.)
 6. Generate actual functional code, not placeholders
-7. Return ONLY the JSON array, no other text`
+7. Return ONLY the JSON array, no other text because I have to parse it directly dont add any other thing which will break the JSON parsing`,
           },
           {
             role: 'user',
