@@ -116,9 +116,7 @@ Visit [http://localhost:5173](http://localhost:5173) in your browser.
 ## 📂 Project Structure
 
 ```
-## 📂 Project Structure
-
-```
+SEMANTIC-GITHUB/
 ├── node_modules/           # Node.js dependencies (auto-generated)
 ├── public/                 # Static assets
 │   └── index.html          # Main HTML entry point
@@ -143,7 +141,7 @@ Visit [http://localhost:5173](http://localhost:5173) in your browser.
 ├── package.json            # Project dependencies and scripts
 ├── postcss.config.js       # PostCSS configuration
 ├── tsconfig.json           # TypeScript configuration
-├── README.md               # Readme
+├── README.md               # Readme File
 ```
 
 ---
@@ -175,6 +173,7 @@ Visit [http://localhost:5173](http://localhost:5173) in your browser.
   - `localStorage.setItem("groq_api_key", "gsk_...")`
 
 ```
+
 
 ## 🧠 Tech Stack
 
