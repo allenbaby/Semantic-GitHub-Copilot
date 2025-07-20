@@ -37,6 +37,32 @@ const AppPreview = ({ projectStructure }: AppPreviewProps) => {
 
   const sandpackFiles = convertToSandpackFiles(projectStructure);
   
+  // Extract dependencies from package.json if it exists
+  const getProjectDependencies = () => {
+    const packageJsonFile = sandpackFiles["package.json"];
+    if (packageJsonFile) {
+      try {
+        const packageJson = JSON.parse(packageJsonFile);
+        return {
+          ...packageJson.dependencies,
+          ...packageJson.devDependencies
+        };
+      } catch (error) {
+        console.error("Failed to parse package.json:", error);
+      }
+    }
+    
+    // Default React dependencies if no package.json found
+    return {
+      "react": "^18.3.1",
+      "react-dom": "^18.3.1",
+      "@types/react": "^18.3.3",
+      "@types/react-dom": "^18.3.0"
+    };
+  };
+
+  const projectDependencies = getProjectDependencies();
+  
   // Only add fallback if NO App file exists at all
   if (!sandpackFiles["src/App.tsx"] && !sandpackFiles["src/App.jsx"] && 
       !sandpackFiles["src/App.js"] && !sandpackFiles["App.tsx"] && 
@@ -101,17 +127,7 @@ root.render(<App />);`;
             autorun: true,
           }}
           customSetup={{
-            dependencies: {
-              "react": "^18.3.1",
-              "react-dom": "^18.3.1",
-              "@types/react": "^18.3.3",
-              "@types/react-dom": "^18.3.0",
-              "axios": "^1.6.0",
-              "lodash": "^4.17.21",
-              "moment": "^2.29.4",
-              "uuid": "^9.0.0",
-              "classnames": "^2.3.2"
-            }
+            dependencies: projectDependencies
           }}
         />
       </CardContent>
