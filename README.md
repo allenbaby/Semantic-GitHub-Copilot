@@ -2,11 +2,8 @@
 
 **Semantic GitHub Copilot** is an 🚀 AI-powered tool that transforms your project ideas into complete, functional codebases.  
 
-<p align="center">
-  <img src="preview.gif" alt="Demo" style="width:100%;"/>
-</p>
+![Demo](public/preview.gif)
 
-![Demo](/preview.gif)
 
 
 
