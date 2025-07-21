@@ -1,6 +1,15 @@
 # 🌟 Semantic GitHub Copilot
 
 **Semantic GitHub Copilot** is an 🚀 AI-powered tool that transforms your project ideas into complete, functional codebases.  
+
+<p align="center">
+  <img src="preview.gif" alt="Demo" style="width:100%;"/>
+</p>
+
+![Demo](/preview.gif)
+
+
+
 Powered by the **Groq API (LLaMA-3.3-70B)**, it generates full React/TypeScript project structures from natural language prompts and renders them live using **Sandpack**.
 
 Whether you're building a todo app, an e-commerce platform, or a full-stack notes app — this tool delivers **production-ready** code with a sleek, modern UI. 🎨
